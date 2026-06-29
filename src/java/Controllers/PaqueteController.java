@@ -1,141 +1,179 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controllers;
 
 import Dao.PaqueteDaoImpl;
 import Interface.IPaquete;
 import Model.Paquete;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.util.List;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 /**
  *
  * @author JoshoSysX
  */
+@MultipartConfig
 @WebServlet(name = "PaqueteController", urlPatterns = {"/PaqueteController"})
 public class PaqueteController extends HttpServlet {
 
-private final IPaquete dao = new PaqueteDaoImpl();
+    private final IPaquete pDao = new PaqueteDaoImpl();
     private final Gson gson = new Gson();
-    
+    private static final String UPLOAD_DIR = "assets/img/paquetes";
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet PaqueteController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet PaqueteController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
+
+        if (action == null) {
+            action = "listar";
+        }
+
+        switch (action) {
+            case "guardar":
+                guardarPaquete(request, response);
+                break;
+            case "editar":
+                editarPaquete(request, response);
+                break;
+            case "eliminar":
+                eliminarPaquete(request, response);
+                break;
+            case "buscar":
+                buscarPaquete(request, response);
+                break;
+            default:
+                listarPaquetes(request, response);
+                break;
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private void listarPaquetes(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        List<Paquete> paquetes = pDao.lista();
+        response.getWriter().print(gson.toJson(paquetes));
+    }
+
+    private void guardarPaquete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            Paquete p = new Paquete();
+            p.setNombre(request.getParameter("nombre"));
+            p.setDescripcion(request.getParameter("descripcion"));
+            p.setDuracion(request.getParameter("duracion"));
+            p.setPrecio(Double.parseDouble(request.getParameter("precio")));
+
+            Part part = request.getPart("imagen");
+            if (part != null && part.getSize() > 0) {
+                String fileName = part.getSubmittedFileName();
+                // obtener la ruta donde guardar la imagen
+                String pathBuild = getServletContext().getRealPath("/")
+                        + "assets/img/paquetes" + File.separator;
+                System.out.println("Ruta Build: " + pathBuild);
+                String pathSource = pathBuild.replace("build" + File.separator + "web", "web");
+
+                if (pathSource.equals(pathBuild)) {
+                    System.out.println("colocar ruta fija");
+                }
+                System.out.println("Ruta Source: " + pathSource);
+                try {
+                    new File(pathSource).mkdirs();
+                    new File(pathBuild).mkdirs();
+
+                    File fileSource = new File(pathSource + fileName);
+                    try (InputStream input = part.getInputStream()) {
+                        java.nio.file.Files.copy(input, fileSource.toPath(),
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    System.out.println("Guardado en Source OK");
+
+                    part.write(pathBuild + fileName);
+                    System.out.println("Guardado en build OK");
+
+                } catch (Exception e) {
+                    System.err.println("Error critico" + e.getMessage());
+                    e.printStackTrace();
+                }
+                p.setImagen("assets/img/paquetes/" + fileName);
+            }
+
+            boolean res = pDao.insert(p);
+            response.getWriter().print(gson.toJson(res));
+
+        } catch (Exception e) {
+            response.getWriter().print(gson.toJson(false));
+        }
+    }
+
+    private void editarPaquete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            Paquete p = new Paquete();
+            p.setId_paquete(Integer.parseInt(request.getParameter("id_paquete")));
+            p.setNombre(request.getParameter("nombre"));
+            p.setDescripcion(request.getParameter("descripcion"));
+            p.setDuracion(request.getParameter("duracion"));
+            p.setPrecio(Double.parseDouble(request.getParameter("precio")));
+
+            Part part = request.getPart("imagen");
+            if (part != null && part.getSize() > 0) {
+                String fileName = part.getSubmittedFileName();
+                String uploadPath = getServletContext().getRealPath("")
+                        + File.separator + UPLOAD_DIR;
+                new File(uploadPath).mkdirs();
+                part.write(uploadPath + File.separator + fileName);
+                p.setImagen(UPLOAD_DIR + "/" + fileName);
+            } else {
+                p.setImagen(request.getParameter("imagen_actual"));
+            }
+
+            boolean res = pDao.update(p);
+            response.getWriter().print(gson.toJson(res));
+
+        } catch (Exception e) {
+            response.getWriter().print(gson.toJson(false));
+        }
+    }
+
+    private void buscarPaquete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Paquete p = pDao.SearchById(id);
+        response.getWriter().print(gson.toJson(p));
+    }
+
+    private void eliminarPaquete(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        boolean res = pDao.delete(id);
+        response.getWriter().print(gson.toJson(res));
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        String action = request.getParameter("action");
-        JsonObject jsonResponse = new JsonObject();
-
-        try (PrintWriter out = response.getWriter()) {
-
-            if ("listar".equals(action)) {
-                var lista = dao.lista();
-                jsonResponse.addProperty("sucess", true);
-                jsonResponse.add("data", gson.toJsonTree(lista));
-
-            } else if ("insert".equals(action)) {
-                Paquete p = new Paquete();
-                p.setNombre(request.getParameter("nombre"));
-                p.setDescripcion(request.getParameter("descripcion"));
-                p.setDuracion(request.getParameter("duracion"));
-                p.setPrecio(Double.parseDouble(request.getParameter("precio")));
-
-                boolean resultado = dao.insert(p);
-                jsonResponse.addProperty("sucess", resultado);
-                jsonResponse.addProperty("message", resultado ? "Paquete registrado" : "Error al registrar");
-
-            } else if ("update".equals(action)) {
-                Paquete p = new Paquete();
-                p.setId_paquete(Integer.parseInt(request.getParameter("id_paquete")));
-                p.setNombre(request.getParameter("nombre"));
-                p.setDescripcion(request.getParameter("descripcion"));
-                p.setDuracion(request.getParameter("duracion"));
-                p.setPrecio(Double.parseDouble(request.getParameter("precio")));
-
-                boolean resultado = dao.update(p);
-                jsonResponse.addProperty("sucess", resultado);
-                jsonResponse.addProperty("message", resultado ? "Paquete actualizado" : "Error al actualizar");
-
-            } else if ("delete".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                boolean resultado = dao.delete(id);
-                jsonResponse.addProperty("sucess", resultado);
-                jsonResponse.addProperty("message", resultado ? "Paquete eliminado" : "Error al eliminar");
-
-            } else {
-                jsonResponse.addProperty("sucess", false);
-                jsonResponse.addProperty("message", "Acción no válida");
-            }
-
-            out.print(jsonResponse.toString());
-
-        } catch (Exception e) {
-            response.setStatus(500);
-            jsonResponse.addProperty("sucess", false);
-            jsonResponse.addProperty("message", "Error: " + e.getMessage());
-            response.getWriter().print(jsonResponse.toString());
-            e.printStackTrace();
-        };
+        processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

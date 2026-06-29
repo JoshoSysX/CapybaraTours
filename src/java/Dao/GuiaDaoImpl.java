@@ -18,19 +18,18 @@ public class GuiaDaoImpl implements IGuia {
         ResultSet rs = null;
         try {
             cn = ConexionOracleSingleton.getConnection();
-            String query = "SELECT * FROM GUÍA ORDER BY id_guia";
+            String query = "SELECT * FROM GUIA ORDER BY id_guia";
             st = cn.prepareStatement(query);
             rs = st.executeQuery();
             while (rs.next()) {
                 Guia g = new Guia();
                 g.setIdGuia(rs.getInt("ID_GUIA"));
                 g.setNombre(rs.getString("NOMBRE"));
-                g.setTelefono(rs.getString("TELÉFONO"));
+                g.setTelefono(rs.getString("TELEFONO"));
                 lista.add(g);
             }
         } catch (Exception e) {
-            System.out.println("Error al listar guías: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error al listar guias: " + e.getMessage());
         } finally {
             cerrarRecursos(rs, st);
         }
@@ -39,39 +38,34 @@ public class GuiaDaoImpl implements IGuia {
 
     @Override
     public boolean insert(Guia g) {
+        // El ID lo asigna el trigger TG_ID_GUIA (MAX(id_guia)+1), no se envia desde Java
         PreparedStatement st = null;
         ResultSet rs = null;
-        int idGuia = 0;
         boolean resultado = false;
         try {
             cn = ConexionOracleSingleton.getConnection();
-            
-            // Obtener siguiente ID de Guía
-            st = cn.prepareStatement("SELECT SEQ_GUIA.NEXTVAL FROM DUAL");
-            rs = st.executeQuery();
-            if (rs.next()) {
-                idGuia = rs.getInt(1);
-            }
-            rs.close();
-            st.close();
 
-            // Insertar Guía
-            String query = "INSERT INTO GUÍA (ID_GUIA, NOMBRE, TELÉFONO) "
-                         + "VALUES (?,?,?)";
+            String query = "INSERT INTO GUIA (NOMBRE, TELEFONO) "
+                         + "VALUES (?,?)";
             st = cn.prepareStatement(query);
-            st.setInt(1, idGuia);
-            st.setString(2, g.getNombre());
-            st.setString(3, g.getTelefono());
-            
+            st.setString(1, g.getNombre());
+            st.setString(2, g.getTelefono());
+
             int r = st.executeUpdate();
             resultado = r > 0;
-            
+
             if (resultado) {
-                System.out.println("Guía registrada correctamente con ID: " + idGuia);
+                // Por si se necesita el id generado en el frontend
+                st.close();
+                st = cn.prepareStatement("SELECT MAX(id_guia) FROM GUIA");
+                rs = st.executeQuery();
+                if (rs.next()) {
+                    g.setIdGuia(rs.getInt(1));
+                }
+                System.out.println("Guia registrada correctamente con ID: " + g.getIdGuia());
             }
         } catch (Exception e) {
-            System.out.println("Error al insertar guía: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error al insertar guia: " + e.getMessage());
         } finally {
             cerrarRecursos(rs, st);
         }
@@ -84,17 +78,16 @@ public class GuiaDaoImpl implements IGuia {
         boolean resultado = false;
         try {
             cn = ConexionOracleSingleton.getConnection();
-            String query = "UPDATE GUÍA SET NOMBRE=?, TELÉFONO=? WHERE ID_GUIA=?";
+            String query = "UPDATE GUIA SET NOMBRE=?, TELEFONO=? WHERE ID_GUIA=?";
             st = cn.prepareStatement(query);
             st.setString(1, g.getNombre());
             st.setString(2, g.getTelefono());
             st.setInt(3, g.getIdGuia());
-            
+
             int r = st.executeUpdate();
             resultado = r > 0;
         } catch (Exception e) {
-            System.out.println("Error al actualizar guía: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error al actualizar guia: " + e.getMessage());
         } finally {
             cerrarRecursos(null, st);
         }
@@ -108,7 +101,7 @@ public class GuiaDaoImpl implements IGuia {
         ResultSet rs = null;
         try {
             cn = ConexionOracleSingleton.getConnection();
-            String query = "SELECT * FROM GUÍA WHERE ID_GUIA = ?";
+            String query = "SELECT * FROM GUIA WHERE ID_GUIA = ?";
             st = cn.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -116,11 +109,10 @@ public class GuiaDaoImpl implements IGuia {
                 g = new Guia();
                 g.setIdGuia(rs.getInt("ID_GUIA"));
                 g.setNombre(rs.getString("NOMBRE"));
-                g.setTelefono(rs.getString("TELÉFONO"));
+                g.setTelefono(rs.getString("TELEFONO"));
             }
         } catch (Exception e) {
-            System.out.println("Error al buscar guía: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error al buscar guia: " + e.getMessage());
         } finally {
             cerrarRecursos(rs, st);
         }
@@ -130,26 +122,30 @@ public class GuiaDaoImpl implements IGuia {
     @Override
     public boolean delete(int id) {
         PreparedStatement st = null;
+        boolean resultado = false;
         try {
             cn = ConexionOracleSingleton.getConnection();
-            String query = "DELETE FROM GUÍA WHERE ID_GUIA = ?";
+            String query = "DELETE FROM GUIA WHERE ID_GUIA = ?";
             st = cn.prepareStatement(query);
             st.setInt(1, id);
             int r = st.executeUpdate();
-            return r > 0;
+            resultado = r > 0;
         } catch (Exception e) {
-            System.out.println("Error al eliminar guía: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            System.out.println("Error al eliminar guia: " + e.getMessage());
         } finally {
             cerrarRecursos(null, st);
         }
+        return resultado;
     }
 
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {
         try {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (st != null) {
+                st.close();
+            }
         } catch (Exception ex) {
             System.out.println("Error cerrando recursos: " + ex.getMessage());
         }

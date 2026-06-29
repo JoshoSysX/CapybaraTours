@@ -1,12 +1,10 @@
 package Controllers;
 
-import Dao.GuiaDaoImpl;
-import Interface.IGuia;
-import Model.Guia;
+import Dao.TransporteDaoImpl;
+import Interface.ITransporte;
+import Model.Transporte;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,10 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author JoshoSysX
  */
-@WebServlet(name = "GuiaController", urlPatterns = {"/GuiaController"})
-public class GuiaController extends HttpServlet {
+@WebServlet(name = "TransporteController", urlPatterns = {"/TransporteController"})
+public class TransporteController extends HttpServlet {
 
-    private final IGuia gDao = new GuiaDaoImpl();
+    private final ITransporte tDao = new TransporteDaoImpl();
     private final Gson gson = new Gson();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -36,69 +34,71 @@ public class GuiaController extends HttpServlet {
 
         switch (action) {
             case "guardar":
-                guardarGuia(request, response);
+                guardarTransporte(request, response);
                 break;
             case "editar":
-                editarGuia(request, response);
+                editarTransporte(request, response);
                 break;
             case "eliminar":
-                eliminarGuia(request, response);
+                eliminarTransporte(request, response);
                 break;
             case "buscar":
-                buscarGuia(request, response);
+                buscarTransporte(request, response);
                 break;
             default:
-                listarGuias(request, response);
+                listarTransportes(request, response);
                 break;
         }
     }
 
-    private void listarGuias(HttpServletRequest request, HttpServletResponse response)
+    private void listarTransportes(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        List<Guia> guias = gDao.lista();
-        response.getWriter().print(gson.toJson(guias));
+        List<Transporte> transportes = tDao.lista();
+        response.getWriter().print(gson.toJson(transportes));
     }
 
-    private void guardarGuia(HttpServletRequest request, HttpServletResponse response)
+    private void guardarTransporte(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
-            Guia g = new Guia();
-            g.setNombre(request.getParameter("nombre"));
-            g.setTelefono(request.getParameter("telefono"));
+            Transporte t = new Transporte();
+            t.setVehiculo(request.getParameter("vehiculo"));
+            t.setCapacidad(Integer.parseInt(request.getParameter("capacidad")));
+            t.setPlaca(request.getParameter("placa"));
 
-            boolean res = gDao.insert(g);
+            boolean res = tDao.insert(t);
             response.getWriter().print(gson.toJson(res));
         } catch (Exception e) {
             response.getWriter().print(gson.toJson(false));
         }
     }
 
-    private void editarGuia(HttpServletRequest request, HttpServletResponse response)
+    private void editarTransporte(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
-            Guia g = new Guia();
-            g.setIdGuia(Integer.parseInt(request.getParameter("id_guia")));
-            g.setNombre(request.getParameter("nombre"));
-            g.setTelefono(request.getParameter("telefono"));
+            Transporte t = new Transporte();
+            t.setIdTransporte(Integer.parseInt(request.getParameter("id_transporte")));
+            t.setVehiculo(request.getParameter("vehiculo"));
+            t.setCapacidad(Integer.parseInt(request.getParameter("capacidad")));
+            t.setPlaca(request.getParameter("placa"));
 
-            boolean res = gDao.update(g);
+            boolean res = tDao.update(t);
             response.getWriter().print(gson.toJson(res));
         } catch (Exception e) {
             response.getWriter().print(gson.toJson(false));
         }
     }
 
-    private void buscarGuia(HttpServletRequest request, HttpServletResponse response)
+    private void buscarTransporte(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Guia g = gDao.SearchById(id);
-        response.getWriter().print(gson.toJson(g));
+        Transporte t = tDao.SearchById(id);
+        response.getWriter().print(gson.toJson(t));
     }
 
-    private void eliminarGuia(HttpServletRequest request, HttpServletResponse response)
+    private void eliminarTransporte(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        boolean res = gDao.delete(id);
+        boolean res = tDao.delete(id);
         response.getWriter().print(gson.toJson(res));
     }
 

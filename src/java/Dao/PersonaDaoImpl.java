@@ -28,7 +28,7 @@ public class PersonaDaoImpl implements IPersona {
 
             while (rs.next()) {
                 Persona p = new Persona();
-                p.setId_persona(rs.getInt("id_persona"));
+                p.setId_persona(rs.getInt("ID_PERSONA"));
                 p.setNombre(rs.getString("NOMBRES"));
                 p.setApellido(rs.getString("APELLIDOS"));
                 p.setDocumento(rs.getString("DOCUMENTO"));
@@ -39,7 +39,6 @@ public class PersonaDaoImpl implements IPersona {
             }
         } catch (Exception e) {
             System.out.println("Error al listar personas: " + e.getMessage());
-            e.printStackTrace();
         } finally {
             cerrarRecursos(rs, st);
         }
@@ -53,101 +52,72 @@ public class PersonaDaoImpl implements IPersona {
         ResultSet rs = null;
 
         int idPersona = 0;
-        int idUsuario = 0;
         int r = 0;
 
         try {
-
             cn = ConexionOracleSingleton.getConnection();
 
-            // ===== OBTENER ID PERSONA =====
-            st = cn.prepareStatement(
-                    "SELECT SEQ_PERSONA.NEXTVAL FROM DUAL");
-
-            rs = st.executeQuery();
-
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
-            }
-
-            rs.close();
-            st.close();
-
             // ===== INSERTAR PERSONA =====
+            // El id_persona lo asigna el trigger TG_ID_PERSONA (MAX(id_persona)+1)
             String query = "INSERT INTO PERSONA "
-                    + "(ID_PERSONA, NOMBRES, APELLIDOS, DOCUMENTO, "
+                    + "(NOMBRES, APELLIDOS, DOCUMENTO, "
                     + "NUMERO_DOC, TELEFONO, CORREO) "
-                    + "VALUES (?,?,?,?,?,?,?)";
+                    + "VALUES (?,?,?,?,?,?)";
 
             st = cn.prepareStatement(query);
 
-            st.setInt(1, idPersona);
-            st.setString(2, p.getNombre());
-            st.setString(3, p.getApellido());
-            st.setString(4, p.getDocumento());
-            st.setString(5, p.getNumeroDoc());
-            st.setString(6, p.getTelefono());
-            st.setString(7, p.getEmail());
+            st.setString(1, p.getNombre());
+            st.setString(2, p.getApellido());
+            st.setString(3, p.getDocumento());
+            st.setString(4, p.getNumeroDoc());
+            st.setString(5, p.getTelefono());
+            st.setString(6, p.getEmail());
 
             r = st.executeUpdate();
 
             if (r > 0) {
 
-                p.setId_persona(idPersona);
-
-                // ===== OBTENER ID USUARIO =====
+                // ===== RECUPERAR ID GENERADO POR EL TRIGGER =====
+                // Necesario porque USUARIO depende de id_persona como FK
                 st.close();
-
-                st = cn.prepareStatement(
-                        "SELECT SEQ_USUARIO.NEXTVAL FROM DUAL");
-
+                st = cn.prepareStatement("SELECT MAX(id_persona) FROM PERSONA");
                 rs = st.executeQuery();
-
                 if (rs.next()) {
-                    idUsuario = rs.getInt(1);
+                    idPersona = rs.getInt(1);
                 }
-
-                rs.close();
+                p.setId_persona(idPersona);
                 st.close();
 
                 // ===== INSERTAR USUARIO =====
+                // El trigger TG_ID_USUARIO asigna id_usuario = id_persona automaticamente
                 u.setRol(Rol.CLIENTE);
 
-                String hashedPassword
-                        = u.HashPassword(u.getContraseña());
+                String hashedPassword = u.HashPassword(u.getContraseña());
 
                 query = "INSERT INTO USUARIO "
-                        + "(ID_USUARIO, ID_PERSONA, USUARIO, CONTRASEÑA, ROL) "
-                        + "VALUES (?,?,?,?,?)";
+                        + "(ID_PERSONA, USUARIO, CONTRASEÑA, ROL) "
+                        + "VALUES (?,?,?,?)";
 
                 st = cn.prepareStatement(query);
 
-                st.setInt(1, idUsuario);
-                st.setInt(2, idPersona);
-                st.setString(3, p.getEmail());
-                st.setString(4, hashedPassword);
-                st.setString(5, u.getRol().name());
+                st.setInt(1, idPersona);
+                st.setString(2, p.getEmail());
+                st.setString(3, hashedPassword);
+                st.setString(4, u.getRol().name());
 
                 r = st.executeUpdate();
 
                 if (r > 0) {
-                    System.out.println("Persona y User creada");
+                    System.out.println("Persona y Usuario creados");
                     System.out.println("Usuario: " + p.getEmail());
                     System.out.println("Rol asignado: " + u.getRol());
                 }
             }
 
         } catch (Exception e) {
-
-            System.out.println("Error al insertar persona: "
-                    + e.getMessage());
-
-            e.printStackTrace();
-
+            System.out.println("Error al insertar persona: " + e.getMessage());
         } finally {
-
             cerrarRecursos(rs, st);
-
         }
 
         return r;
@@ -177,7 +147,6 @@ public class PersonaDaoImpl implements IPersona {
 
         } catch (Exception e) {
             System.out.println("Error al actualizar persona: " + e.getMessage());
-            e.printStackTrace();
         } finally {
             cerrarRecursos(null, st);
         }
@@ -200,7 +169,7 @@ public class PersonaDaoImpl implements IPersona {
 
             if (rs.next()) {
                 p = new Persona();
-                p.setId_persona(rs.getInt("id_persona"));
+                p.setId_persona(rs.getInt("ID_PERSONA"));
                 p.setNombre(rs.getString("NOMBRES"));
                 p.setApellido(rs.getString("APELLIDOS"));
                 p.setDocumento(rs.getString("DOCUMENTO"));
@@ -210,7 +179,6 @@ public class PersonaDaoImpl implements IPersona {
             }
         } catch (Exception e) {
             System.out.println("Error al buscar persona: " + e.getMessage());
-            e.printStackTrace();
         } finally {
             cerrarRecursos(rs, st);
         }
@@ -221,43 +189,33 @@ public class PersonaDaoImpl implements IPersona {
     public boolean delete(int id) {
 
         PreparedStatement st = null;
+        boolean resultado = false;
 
         try {
-
             cn = ConexionOracleSingleton.getConnection();
 
-            // Eliminar usuario asociado
-            st = cn.prepareStatement(
-                    "DELETE FROM USUARIO WHERE ID_PERSONA = ?"
-            );
+            // Eliminar usuario asociado primero (FK)
+            st = cn.prepareStatement("DELETE FROM USUARIO WHERE ID_PERSONA = ?");
             st.setInt(1, id);
             st.executeUpdate();
-
             st.close();
 
             // Eliminar persona
-            st = cn.prepareStatement(
-                    "DELETE FROM PERSONA WHERE ID_PERSONA = ?"
-            );
+            st = cn.prepareStatement("DELETE FROM PERSONA WHERE ID_PERSONA = ?");
             st.setInt(1, id);
 
-            return st.executeUpdate() > 0;
+            int r = st.executeUpdate();
+            resultado = r > 0;
 
         } catch (Exception e) {
-
-            System.out.println("Error al eliminar: " + e.getMessage());
-            e.printStackTrace();
-
+            System.out.println("Error al eliminar persona: " + e.getMessage());
         } finally {
-
             cerrarRecursos(null, st);
-
         }
 
-        return false;
+        return resultado;
     }
 
-    // Método auxiliar para cerrar recursos
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {
         try {
             if (rs != null) {

@@ -1,4 +1,3 @@
-
 package Model;
 
 public class Paquete {
@@ -7,16 +6,18 @@ public class Paquete {
     private String descripcion;
     private String duracion;
     private double precio;
+    private String imagen;
 
     public Paquete() {
     }
 
-    public Paquete(int id_paquete, String nombre, String descripcion, String duracion, double precio) {
+    public Paquete(int id_paquete, String nombre, String descripcion, String duracion, double precio, String imagen) {
         this.id_paquete = id_paquete;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.precio = precio;
+        this.imagen = imagen;
     }
 
     public int getId_paquete() {
@@ -58,5 +59,13 @@ public class Paquete {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-    
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
 }

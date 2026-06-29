@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controllers;
 
 import Dao.PersonaDaoImpl;
@@ -35,7 +31,6 @@ public class AuthController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -48,29 +43,12 @@ public class AuthController extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -79,43 +57,38 @@ public class AuthController extends HttpServlet {
 
         String action = request.getParameter("action");
         JsonObject jsonResponse = new JsonObject();
-
         Gson gson = new Gson();
 
         try (PrintWriter out = response.getWriter()) {
 
-            // ====================== LOGIN ======================
-            if (action.equals("login")) {
+            if (action.equals("validar")) {
                 String user = request.getParameter("usuario");
                 String pass = request.getParameter("password");
-                
 
                 Usuario us = uDao.validate(user, pass);
 
                 if (us != null && us.getUsuario() != null) {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("usuario", us);
-
-                    jsonResponse.addProperty("sucess", true);
+                    jsonResponse.addProperty("success", true);
                     jsonResponse.addProperty("message", "Inicio de Sesion");
                     jsonResponse.add("userData", gson.toJsonTree(us));
                 } else {
-                    jsonResponse.addProperty("sucess", false);
+                    jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("message", "Usuario o contraseña invalida");
                 }
                 out.print(jsonResponse.toString());
 
-            } // ====================== LOGOUT ======================
-            else if (action.equals("salir")) {
+            } else if (action.equals("Salir")) {
                 HttpSession session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
                 }
-                jsonResponse.addProperty("sucess", true);
+                jsonResponse.addProperty("success", true);
                 jsonResponse.addProperty("message", "Sesion cerrada");
                 out.print(jsonResponse.toString());
-            } // ====================== REGISTRO ======================
-            else if (action.equals("register")) {
+
+            } else if (action.equals("register")) {
                 Persona p = new Persona();
                 Usuario u = new Usuario();
 
@@ -127,37 +100,25 @@ public class AuthController extends HttpServlet {
                 p.setEmail(request.getParameter("email"));
 
                 u.setContraseña(request.getParameter("password"));
-                // u.setUsuario se asigna dentro del DAO con el email
 
                 int resultado = pDao.insert(p, u);
 
-                jsonResponse.addProperty("sucess", resultado > 0);
-                jsonResponse.addProperty("message", resultado > 0 ? "Registro exitoso" : "Error en el registro");
-                out.print(jsonResponse.toString());
-            } // ====================== ACCIÓN NO VÁLIDA ======================
-            else {
-                jsonResponse.addProperty("sucess", false);
-                jsonResponse.addProperty("message", "Acción no válida");
+                jsonResponse.addProperty("success", resultado != 0);
+                jsonResponse.addProperty("message", resultado != 0 ? "Registro exitoso" : "Error en el registro");
                 out.print(jsonResponse.toString());
             }
 
         } catch (Exception e) {
             response.setStatus(500);
-            jsonResponse.addProperty("sucess", false);
-            jsonResponse.addProperty("message", "Error: " + e.getMessage());
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Error" + e.getMessage());
             response.getWriter().print(jsonResponse.toString());
-            e.printStackTrace();
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }
