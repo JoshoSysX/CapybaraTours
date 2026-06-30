@@ -1,11 +1,219 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capibara Tours — Inicio</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body class="d-flex flex-column min-vh-100" style="background-color:#FFFDF8;">
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-ct sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="assets/png/logo.png" alt="Capibara Tours">
+        <span class="brand-name">Capibara Tours</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+          <li class="nav-item"><a class="nav-link active" href="index.html"><i class="bi bi-house-fill me-1"></i>Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="cliente/catalogo.html"><i class="bi bi-map-fill me-1"></i>Paquetes</a></li>
+          <li class="nav-item"><a class="nav-link" href="cliente/reservar.html"><i class="bi bi-calendar-check-fill me-1"></i>Reservar</a></li>
+          <li class="nav-item"><a class="nav-link" href="cliente/mis-reservas.html"><i class="bi bi-journal-text me-1"></i>Mis Reservas</a></li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-ct-primary px-3" href="cliente/login.html"><i class="bi bi-person-fill me-1"></i>Ingresar</a>
+          </li>
+          <li class="nav-item ms-1">
+            <a class="btn btn-ct-outline px-3" href="admin/login.html"><i class="bi bi-shield-lock-fill me-1"></i>Admin</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-fill">
+
+    <!-- HERO -->
+    <section class="hero-ct">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <p class="text-uppercase fw-bold mb-1" style="color:var(--ct-accent-light);letter-spacing:.12em;font-size:.85rem;">Tarapoto · San Martín · Perú</p>
+            <h1>Descubre la Naturaleza<br>con <span style="color:var(--ct-accent);">Capibara Tours</span></h1>
+            <p class="mt-2 mb-4">Tours de aventura a Laguna Azul, Altomayo, Salto Bruja, Lomas y Ahuashiyacu. Reserva en línea en 3 pasos y recibe confirmación al instante.</p>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="cliente/catalogo.html" class="btn btn-ct-primary btn-lg px-4"><i class="bi bi-binoculars-fill me-2"></i>Ver Paquetes</a>
+              <a href="cliente/reservar.html" class="btn btn-ct-outline btn-lg px-4"><i class="bi bi-calendar2-plus me-2"></i>Reservar Ahora</a>
+            </div>
+            <div class="d-flex gap-4 mt-4">
+              <div class="text-center">
+                <div style="font-size:1.6rem;font-weight:800;color:var(--ct-accent-dark);">5+</div>
+                <div style="font-size:.78rem;color:var(--ct-text-muted);">Años de experiencia</div>
+              </div>
+              <div class="text-center">
+                <div style="font-size:1.6rem;font-weight:800;color:var(--ct-accent-dark);">5</div>
+                <div style="font-size:.78rem;color:var(--ct-text-muted);">Rutas disponibles</div>
+              </div>
+              <div class="text-center">
+                <div style="font-size:1.6rem;font-weight:800;color:var(--ct-accent-dark);">1000+</div>
+                <div style="font-size:.78rem;color:var(--ct-text-muted);">Clientes satisfechos</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5 text-center d-none d-lg-block">
+            <img src="assets/png/logo.png" alt="Capibara Tours" style="max-height:320px;filter:drop-shadow(0 8px 24px rgba(107,63,31,.25));">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESTINOS DESTACADOS -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="page-title">Nuestros Destinos</h2>
+        <div class="row g-4">
+          <!-- Card 1 -->
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card card-ct tour-card h-100">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Laguna_Azul_Tarapoto.jpg/640px-Laguna_Azul_Tarapoto.jpg"
+                   class="card-img-top" alt="Laguna Azul"
+                   onerror="this.src='https://placehold.co/640x200/A0522D/FFF?text=Laguna+Azul'">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">Laguna Azul</h5>
+                  <span class="tour-badge">1 día</span>
+                </div>
+                <p class="card-text text-muted small flex-fill">Maravíllate con las aguas cristalinas de color azul esmeralda rodeadas de selva virgen. Incluye transporte, guía y almuerzo.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price-tag">S/ 85 <small class="text-muted fw-normal" style="font-size:.75rem;">/ persona</small></span>
+                  <a href="cliente/reservar.html" class="btn btn-ct-primary btn-sm px-3">Reservar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card card-ct tour-card h-100">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Catarata_de_Ahuashiyacu.jpg/640px-Catarata_de_Ahuashiyacu.jpg"
+                   class="card-img-top" alt="Ahuashiyacu"
+                   onerror="this.src='https://placehold.co/640x200/A0522D/FFF?text=Ahuashiyacu'">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">Ahuashiyacu</h5>
+                  <span class="tour-badge" style="background:#5a7a3a;">Medio día</span>
+                </div>
+                <p class="card-text text-muted small flex-fill">Impresionante catarata de 40 metros en plena selva alta. Tour de medio día ideal para familias. Incluye entrada y guía.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price-tag">S/ 45 <small class="text-muted fw-normal" style="font-size:.75rem;">/ persona</small></span>
+                  <a href="cliente/reservar.html" class="btn btn-ct-primary btn-sm px-3">Reservar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card card-ct tour-card h-100">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Altomayo_Peru.jpg/640px-Altomayo_Peru.jpg"
+                   class="card-img-top" alt="Altomayo"
+                   onerror="this.src='https://placehold.co/640x200/A0522D/FFF?text=Altomayo'">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">Altomayo</h5>
+                  <span class="tour-badge">1 día</span>
+                </div>
+                <p class="card-text text-muted small flex-fill">Aventura entre bosques de neblina, cataratas escondidas y aves exóticas del norte peruano. Incluye guía especializado y almuerzo.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="price-tag">S/ 95 <small class="text-muted fw-normal" style="font-size:.75rem;">/ persona</small></span>
+                  <a href="cliente/reservar.html" class="btn btn-ct-primary btn-sm px-3">Reservar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <a href="cliente/catalogo.html" class="btn btn-ct-outline px-4"><i class="bi bi-grid-fill me-2"></i>Ver todos los paquetes</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="py-5" style="background:#F5EDD8;">
+      <div class="container">
+        <h2 class="page-title">¿Cómo reservar?</h2>
+        <div class="row g-4 text-center">
+          <div class="col-12 col-md-4">
+            <div class="p-3">
+              <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;background:var(--ct-accent);color:#fff;font-size:1.6rem;">
+                <i class="bi bi-search"></i>
+              </div>
+              <h6 class="fw-bold" style="color:var(--ct-accent-dark);">1. Elige tu paquete</h6>
+              <p class="small text-muted mb-0">Navega el catálogo, compara rutas, precios y fechas disponibles sin necesidad de registrarte.</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="p-3">
+              <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;background:var(--ct-accent);color:#fff;font-size:1.6rem;">
+                <i class="bi bi-person-vcard-fill"></i>
+              </div>
+              <h6 class="fw-bold" style="color:var(--ct-accent-dark);">2. Ingresa tus datos</h6>
+              <p class="small text-muted mb-0">Completa nombre, DNI y datos de contacto. El sistema genera tu número de reserva único al instante.</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="p-3">
+              <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;background:var(--ct-accent);color:#fff;font-size:1.6rem;">
+                <i class="bi bi-credit-card-fill"></i>
+              </div>
+              <h6 class="fw-bold" style="color:var(--ct-accent-dark);">3. Paga el anticipo</h6>
+              <p class="small text-muted mb-0">Confirma con un anticipo mínimo vía Yape, Plin o tarjeta. Recibe confirmación por WhatsApp y correo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="ct-footer py-4 mt-auto">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <img src="assets/png/logo.png" alt="Logo" style="height:36px;">
+            <span class="fw-bold text-white">Capibara Tours</span>
+          </div>
+          <p class="small mb-0" style="color:#F5DEB3;">Agencia de turismo en Tarapoto, San Martín. Tours de aventura y naturaleza desde 2019.</p>
+        </div>
+        <div class="col-12 col-md-4">
+          <h6 class="text-white fw-bold mb-2">Destinos</h6>
+          <ul class="list-unstyled small mb-0">
+            <li><a href="cliente/catalogo.html">Laguna Azul</a></li>
+            <li><a href="cliente/catalogo.html">Altomayo</a></li>
+            <li><a href="cliente/catalogo.html">Salto Bruja</a></li>
+            <li><a href="cliente/catalogo.html">Lomas · Ahuashiyacu</a></li>
+          </ul>
+        </div>
+        <div class="col-12 col-md-4">
+          <h6 class="text-white fw-bold mb-2">Contacto</h6>
+          <p class="small mb-1" style="color:#F5DEB3;"><i class="bi bi-whatsapp me-2"></i>+51 900 000 000</p>
+          <p class="small mb-1" style="color:#F5DEB3;"><i class="bi bi-envelope-fill me-2"></i>info@capibaratours.pe</p>
+          <p class="small mb-0" style="color:#F5DEB3;"><i class="bi bi-geo-alt-fill me-2"></i>Jr. Tarapoto 123, Tarapoto</p>
+        </div>
+      </div>
+      <hr style="border-color:rgba(255,255,255,.2);" class="mt-3">
+      <p class="text-center small mb-0" style="color:#F5DEB3;">&copy; 2026 Capibara Tours — Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
 </html>

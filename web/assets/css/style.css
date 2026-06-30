@@ -1,0 +1,319 @@
+/* ================================================
+   CAPIBARA TOURS — Estilos Globales
+   Paleta:
+     Header BG:   #FDF5E6 (crema cálido)
+     Header Text: #CD853F (marrón dorado)
+     Footer BG:   #8B5E3C (marrón tierra)
+     Acento:      #A0522D (sienna)
+     Hover:       #6B3F1F (chocolate oscuro)
+   ================================================ */
+
+:root {
+  --ct-header-bg:   #FDF5E6;
+  --ct-header-txt:  #CD853F;
+  --ct-footer-bg:   #8B5E3C;
+  --ct-accent:      #A0522D;
+  --ct-accent-dark: #6B3F1F;
+  --ct-accent-light:#D2955A;
+  --ct-body-bg:     #FFFDF8;
+  --ct-card-border: #E8D5B7;
+  --ct-text-main:   #3B2A1A;
+  --ct-text-muted:  #7D6047;
+}
+
+/* ——— Navbar ——— */
+.navbar-ct {
+  background-color: var(--ct-header-bg) !important;
+  border-bottom: 2px solid var(--ct-card-border);
+  padding: 0.6rem 1rem;
+}
+.navbar-ct .navbar-brand,
+.navbar-ct .nav-link {
+  color: var(--ct-header-txt) !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.navbar-ct .nav-link:hover,
+.navbar-ct .nav-link.active {
+  color: var(--ct-accent-dark) !important;
+}
+.navbar-ct .navbar-toggler {
+  border-color: var(--ct-header-txt);
+}
+.navbar-ct .navbar-toggler-icon {
+  filter: invert(55%) sepia(40%) saturate(500%) hue-rotate(5deg) brightness(90%);
+}
+.navbar-brand img {
+  height: 52px;
+  width: auto;
+}
+.brand-name {
+  color: var(--ct-header-txt);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ——— Botones ——— */
+.btn-ct-primary {
+  background-color: var(--ct-accent);
+  border-color: var(--ct-accent);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.btn-ct-primary:hover,
+.btn-ct-primary:focus {
+  background-color: var(--ct-accent-dark);
+  border-color: var(--ct-accent-dark);
+  color: #fff;
+}
+.btn-ct-outline {
+  border: 2px solid var(--ct-accent);
+  color: var(--ct-accent);
+  font-weight: 600;
+}
+.btn-ct-outline:hover {
+  background-color: var(--ct-accent);
+  color: #fff;
+}
+
+/* ——— Cards ——— */
+.card-ct {
+  border: 1px solid var(--ct-card-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(139,94,60,0.08);
+  transition: box-shadow 0.25s, transform 0.2s;
+}
+.card-ct:hover {
+  box-shadow: 0 6px 20px rgba(139,94,60,0.18);
+  transform: translateY(-3px);
+}
+.card-ct .card-header {
+  background-color: var(--ct-accent) !important;
+  color: #fff !important;
+  font-weight: 700;
+  border-radius: 9px 9px 0 0 !important;
+  letter-spacing: 0.04em;
+}
+
+/* ——— Page Title ——— */
+.page-title {
+  color: var(--ct-accent-dark);
+  font-weight: 700;
+  border-left: 4px solid var(--ct-accent-light);
+  padding-left: 0.75rem;
+  margin-bottom: 1.4rem;
+}
+
+/* ——— Footer ——— */
+footer.ct-footer {
+  background-color: var(--ct-footer-bg) !important;
+  color: #FDF5E6 !important;
+}
+footer.ct-footer a {
+  color: #F5DEB3;
+  text-decoration: none;
+}
+footer.ct-footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ——— Sidebar (Admin) ——— */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background-color: var(--ct-accent-dark);
+  padding-top: 1rem;
+  flex-shrink: 0;
+}
+.sidebar .nav-link {
+  color: #F5DEB3 !important;
+  padding: 0.65rem 1.2rem;
+  border-radius: 6px;
+  margin: 2px 8px;
+  font-weight: 500;
+  transition: background 0.18s;
+}
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+.sidebar .nav-link i {
+  width: 1.4rem;
+  text-align: center;
+  margin-right: 0.4rem;
+}
+.sidebar-header {
+  background-color: var(--ct-accent);
+  padding: 1rem;
+  text-align: center;
+}
+.sidebar-header img {
+  height: 56px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.sidebar-title {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+
+/* ——— Admin main area ——— */
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--ct-body-bg);
+}
+.admin-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+/* ——— Hero (índice cliente) ——— */
+.hero-ct {
+  background: linear-gradient(135deg, #FDF5E6 0%, #F5DEB3 100%);
+  border-bottom: 3px solid var(--ct-card-border);
+  padding: 3rem 1rem;
+}
+.hero-ct h1 {
+  color: var(--ct-accent-dark);
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 1.15;
+}
+.hero-ct p {
+  color: var(--ct-text-muted);
+  font-size: 1.1rem;
+}
+
+/* ——— Tour Card (catálogo) ——— */
+.tour-card .card-img-top {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+.tour-badge {
+  background-color: var(--ct-accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.price-tag {
+  color: var(--ct-accent-dark);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+/* ——— Status badges ——— */
+.badge-confirmada  { background-color: #28a745; }
+.badge-pendiente   { background-color: #ffc107; color: #333; }
+.badge-ejecutado   { background-color: #17a2b8; }
+.badge-cancelada   { background-color: #dc3545; }
+.badge-guia        { background-color: var(--ct-accent); }
+
+/* ——— DataTable overrides ——— */
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--ct-card-border);
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+}
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid var(--ct-card-border);
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+}
+table.dataTable thead th {
+  background-color: var(--ct-accent) !important;
+  color: #fff !important;
+  border-bottom: none !important;
+}
+
+/* ——— SweetAlert custom ——— */
+.swal2-confirm {
+  background-color: var(--ct-accent) !important;
+  border-color: var(--ct-accent) !important;
+}
+
+/* ——— Forms ——— */
+.form-label { color: var(--ct-text-main); font-weight: 500; }
+.form-control:focus, .form-select:focus {
+  border-color: var(--ct-accent-light);
+  box-shadow: 0 0 0 0.2rem rgba(160,82,45,0.2);
+}
+
+/* ——— Login page ——— */
+.login-page {
+  background: linear-gradient(160deg, #FDF5E6 0%, #E8D5B7 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  max-width: 420px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(107,63,31,0.2);
+}
+.login-card .card-header {
+  background-color: var(--ct-accent) !important;
+  border-radius: 15px 15px 0 0 !important;
+  padding: 1.5rem;
+  text-align: center;
+}
+.login-card .card-header img {
+  height: 72px;
+}
+
+/* ——— Step indicator (reserva) ——— */
+.steps-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 1.5rem;
+}
+.step-item {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  background: #eee;
+  color: #888;
+  font-weight: 600;
+  font-size: 0.8rem;
+  position: relative;
+}
+.step-item.active {
+  background-color: var(--ct-accent);
+  color: #fff;
+}
+.step-item.done {
+  background-color: var(--ct-accent-light);
+  color: #fff;
+}
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -8px; top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+  border-left-color: inherit;
+  z-index: 1;
+}
+
+/* ——— Responsive utils ——— */
+@media (max-width: 767.98px) {
+  .sidebar { width: 100%; min-height: auto; }
+  .admin-wrapper { flex-direction: column; }
+  .hero-ct h1 { font-size: 1.8rem; }
+}

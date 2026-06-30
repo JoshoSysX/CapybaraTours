@@ -1,6 +1,7 @@
 package Dao;
 
 import Interface.IReserva;
+import Model.EstadoReserva;
 import Model.Reserva;
 import Model.Persona;
 import Model.Paquete;
@@ -45,6 +46,7 @@ public class ReservaDaoImpl implements IReserva {
                 r.setFecha(rs.getDate("FECHA"));
                 r.setCantidad(rs.getInt("CANTIDAD_PERSONAS"));
                 r.setFecha_programada(rs.getDate("FECHA_PRGRAMADA"));
+                r.setEstadoReserva(codeToEstado(rs.getString("ESTADO")));
 
                 lista.add(r);
             }
@@ -74,7 +76,7 @@ public class ReservaDaoImpl implements IReserva {
             st.setInt(2, r.getPaquete().getId_paquete());
             st.setDate(3, new java.sql.Date(r.getFecha().getTime()));
             st.setInt(4, r.getCantidad());
-            st.setString(5, r.getEstadoReserva().name());
+            st.setString(5, estadoToCode(r.getEstadoReserva()));
             st.setDate(6, new java.sql.Date(r.getFecha_programada().getTime()));
 
             rResultado = st.executeUpdate();
@@ -112,7 +114,7 @@ public class ReservaDaoImpl implements IReserva {
             st.setInt(2, r.getPaquete().getId_paquete());
             st.setDate(3, new java.sql.Date(r.getFecha().getTime()));
             st.setInt(4, r.getCantidad());
-            st.setString(5, r.getEstadoReserva().name());
+            st.setString(5, estadoToCode(r.getEstadoReserva()));
             st.setDate(6, new java.sql.Date(r.getFecha_programada().getTime()));
             st.setInt(7, r.getId_reserva());
 
@@ -159,6 +161,7 @@ public class ReservaDaoImpl implements IReserva {
                 r.setFecha(rs.getDate("FECHA"));
                 r.setCantidad(rs.getInt("CANTIDAD_PERSONAS"));
                 r.setFecha_programada(rs.getDate("FECHA_PRGRAMADA"));
+                r.setEstadoReserva(codeToEstado(rs.getString("ESTADO")));
             }
         } catch (Exception e) {
             System.out.println("Error al buscar reserva: " + e.getMessage());
@@ -213,6 +216,7 @@ public class ReservaDaoImpl implements IReserva {
                 r.setFecha(rs.getDate("FECHA"));
                 r.setCantidad(rs.getInt("CANTIDAD_PERSONAS"));
                 r.setFecha_programada(rs.getDate("FECHA_PRGRAMADA"));
+                r.setEstadoReserva(codeToEstado(rs.getString("ESTADO")));
 
                 lista.add(r);
             }
@@ -222,6 +226,35 @@ public class ReservaDaoImpl implements IReserva {
             cerrarRecursos(rs, st);
         }
         return lista;
+    }
+
+
+    // La columna ESTADO de la BD es char(3); mapeamos el enum Java a un codigo corto
+    private String estadoToCode(EstadoReserva e) {
+        if (e == null) return "PEN";
+        switch (e) {
+            case PENDIENTE:  return "PEN";
+            case CONFIRMADO: return "CNF";
+            case PAGADA:     return "PAG";
+            case EN_CURSO:   return "CUR";
+            case FINALIZADA: return "FIN";
+            case CANCELADA:  return "CAN";
+            default:         return "PEN";
+        }
+    }
+
+    private EstadoReserva codeToEstado(String c) {
+        if (c == null) return EstadoReserva.PENDIENTE;
+        switch (c.trim()) {
+            case "PEN": return EstadoReserva.PENDIENTE;
+            case "CNF": return EstadoReserva.CONFIRMADO;
+            case "PAG": return EstadoReserva.PAGADA;
+            case "ABO": return EstadoReserva.CONFIRMADO; // abonado parcial (trigger de pagos)
+            case "CUR": return EstadoReserva.EN_CURSO;
+            case "FIN": return EstadoReserva.FINALIZADA;
+            case "CAN": return EstadoReserva.CANCELADA;
+            default:    return EstadoReserva.PENDIENTE;
+        }
     }
 
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {

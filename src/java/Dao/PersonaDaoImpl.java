@@ -49,78 +49,99 @@ public class PersonaDaoImpl implements IPersona {
     public int insert(Persona p, Usuario u) {
 
         PreparedStatement st = null;
+        CallableStatement cs = null;
         ResultSet rs = null;
 
         int idPersona = 0;
-        int r = 0;
+        int resultado = 0;
 
         try {
             cn = ConexionOracleSingleton.getConnection();
+            cn.setAutoCommit(false);
 
-            // ===== INSERTAR PERSONA =====
-            // El id_persona lo asigna el trigger TG_ID_PERSONA (MAX(id_persona)+1)
-            String query = "INSERT INTO PERSONA "
-                    + "(NOMBRES, APELLIDOS, DOCUMENTO, "
-                    + "NUMERO_DOC, TELEFONO, CORREO) "
-                    + "VALUES (?,?,?,?,?,?)";
+            String queryPersona
+                    = "BEGIN "
+                    + "INSERT INTO PERSONA "
+                    + "(NOMBRES, APELLIDOS, DOCUMENTO, NUMERO_DOC, TELEFONO, CORREO) "
+                    + "VALUES (?,?,?,?,?,?) "
+                    + "RETURNING ID_PERSONA INTO ?; "
+                    + "END;";
 
-            st = cn.prepareStatement(query);
+            cs = cn.prepareCall(queryPersona);
 
-            st.setString(1, p.getNombre());
-            st.setString(2, p.getApellido());
-            st.setString(3, p.getDocumento());
-            st.setString(4, p.getNumeroDoc());
-            st.setString(5, p.getTelefono());
-            st.setString(6, p.getEmail());
+            cs.setString(1, p.getNombre());
+            cs.setString(2, p.getApellido());
+            cs.setString(3, p.getDocumento());
+            cs.setString(4, p.getNumeroDoc());
+            cs.setString(5, p.getTelefono());
+            cs.setString(6, p.getEmail());
+            cs.registerOutParameter(7, Types.INTEGER);
 
-            r = st.executeUpdate();
+            cs.execute();
 
-            if (r > 0) {
+            idPersona = cs.getInt(7);
+            p.setId_persona(idPersona);
 
-                // ===== RECUPERAR ID GENERADO POR EL TRIGGER =====
-                // Necesario porque USUARIO depende de id_persona como FK
-                st.close();
-                st = cn.prepareStatement("SELECT MAX(id_persona) FROM PERSONA");
-                rs = st.executeQuery();
-                if (rs.next()) {
-                    idPersona = rs.getInt(1);
-                }
-                p.setId_persona(idPersona);
-                st.close();
+            cs.close();
+            cs = null;
 
-                // ===== INSERTAR USUARIO =====
-                // El trigger TG_ID_USUARIO asigna id_usuario = id_persona automaticamente
-                u.setRol(Rol.CLIENTE);
+            u.setRol(Rol.CLIENTE);
+            String hashedPassword = u.HashPassword(u.getContraseña());
 
-                String hashedPassword = u.HashPassword(u.getContraseña());
+            String queryUsuario
+                    = "INSERT INTO USUARIO "
+                    + "(ID_PERSONA, USUARIO, \"CONTRASEÑA\", ROL) "
+                    + "VALUES (?,?,?,?)";
 
-                query = "INSERT INTO USUARIO "
-                        + "(ID_PERSONA, USUARIO, CONTRASEÑA, ROL) "
-                        + "VALUES (?,?,?,?)";
+            st = cn.prepareStatement(queryUsuario);
+            st.setInt(1, idPersona);
+            st.setString(2, p.getEmail());
+            st.setString(3, hashedPassword);
+            st.setString(4, u.getRol().name());
 
-                st = cn.prepareStatement(query);
+            int rUsuario = st.executeUpdate();
 
-                st.setInt(1, idPersona);
-                st.setString(2, p.getEmail());
-                st.setString(3, hashedPassword);
-                st.setString(4, u.getRol().name());
-
-                r = st.executeUpdate();
-
-                if (r > 0) {
-                    System.out.println("Persona y Usuario creados");
-                    System.out.println("Usuario: " + p.getEmail());
-                    System.out.println("Rol asignado: " + u.getRol());
-                }
+            if (rUsuario > 0) {
+                cn.commit();
+                resultado = 1;
+                System.out.println("Persona y Usuario creados correctamente");
+            } else {
+                cn.rollback();
             }
 
         } catch (Exception e) {
-            System.out.println("Error al insertar persona: " + e.getMessage());
+            try {
+                if (cn != null) {
+                    cn.rollback();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            System.out.println("Error al insertar persona y usuario:");
+            e.printStackTrace();
+
         } finally {
+            try {
+                if (cn != null) {
+                    cn.setAutoCommit(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             cerrarRecursos(rs, st);
+
+            try {
+                if (cs != null) {
+                    cs.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        return r;
+        return resultado;
     }
 
     @Override

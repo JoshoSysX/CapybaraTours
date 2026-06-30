@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capibara Tours — Reservar Tour</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body class="d-flex flex-column min-vh-100" style="background:#FFFDF8;">
+
+  <nav class="navbar navbar-expand-lg navbar-ct sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="../assets/png/logo.png" alt="Capibara Tours">
+        <span class="brand-name">Capibara Tours</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navRes">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navRes">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+          <li class="nav-item"><a class="nav-link" href="../index.html"><i class="bi bi-house-fill me-1"></i>Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="catalogo.html"><i class="bi bi-map-fill me-1"></i>Paquetes</a></li>
+          <li class="nav-item"><a class="nav-link active" href="reservar.html"><i class="bi bi-calendar-check-fill me-1"></i>Reservar</a></li>
+          <li class="nav-item" id="navMisReservas"><a class="nav-link" href="mis-reservas.html"><i class="bi bi-journal-text me-1"></i>Mis Reservas</a></li>
+          <li class="nav-item ms-lg-2" id="navSesion"><a class="btn btn-ct-primary px-3" href="login.html"><i class="bi bi-person-fill me-1"></i>Ingresar</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-fill container py-4">
+    <h2 class="page-title">Reservar un Tour</h2>
+
+    <div class="alert alert-warning d-none" id="alertaLogin">
+      <i class="bi bi-shield-exclamation me-2"></i>
+      Debes <a href="login.html">iniciar sesión</a> o <a href="registro.html">crear una cuenta</a> para completar tu reserva. Puedes seguir mirando el resumen mientras tanto.
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+
+        <div class="card card-ct mb-4">
+          <div class="card-header"><i class="bi bi-map-fill me-2"></i>Selecciona paquete y fecha</div>
+          <div class="card-body p-4">
+            <div id="sinPaquetes" class="text-muted small d-none">No hay paquetes disponibles en este momento.</div>
+            <div class="row g-3" id="formPaquete">
+              <div class="col-12">
+                <label class="form-label">Paquete turístico <span class="text-danger">*</span></label>
+                <select class="form-select" id="paquete" onchange="actualizarResumen()">
+                  <option value="">— Selecciona un paquete —</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Fecha del tour <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="fechaTour" onchange="actualizarResumen()">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Número de personas <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="personas" min="1" max="30" value="1" onchange="actualizarResumen()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-ct mb-4">
+          <div class="card-header"><i class="bi bi-credit-card-fill me-2"></i>Método de pago del anticipo</div>
+          <div class="card-body p-4">
+            <div class="row g-2">
+              <div class="col-4">
+                <div class="card text-center p-2 metodo-pago" data-metodo="YAP" onclick="selMetodo(this)" style="cursor:pointer;border:2px solid #E8D5B7;border-radius:8px;">
+                  <i class="bi bi-phone-fill fs-4" style="color:#6B2D8B;"></i><div class="small fw-bold mt-1">Yape</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="card text-center p-2 metodo-pago" data-metodo="PLI" onclick="selMetodo(this)" style="cursor:pointer;border:2px solid #E8D5B7;border-radius:8px;">
+                  <i class="bi bi-phone-fill fs-4" style="color:#00A86B;"></i><div class="small fw-bold mt-1">Plin</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="card text-center p-2 metodo-pago" data-metodo="TAR" onclick="selMetodo(this)" style="cursor:pointer;border:2px solid #E8D5B7;border-radius:8px;">
+                  <i class="bi bi-credit-card-fill fs-4" style="color:var(--ct-accent);"></i><div class="small fw-bold mt-1">Tarjeta</div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="metodoPago">
+          </div>
+        </div>
+
+        <button class="btn btn-ct-primary btn-lg w-100 py-3" id="btnConfirmar" onclick="confirmarReserva()">
+          <i class="bi bi-check-circle-fill me-2"></i>Confirmar Reserva y Pagar Anticipo
+        </button>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card card-ct sticky-top" style="top:80px;">
+          <div class="card-header"><i class="bi bi-receipt-cutoff me-2"></i>Resumen de Reserva</div>
+          <div class="card-body p-3">
+            <div id="resumen-vacio" class="text-center text-muted py-3 small">
+              <i class="bi bi-arrow-left-circle fs-3 d-block mb-2"></i>
+              Selecciona un paquete para ver el resumen.
+            </div>
+            <div id="resumen-contenido" class="d-none">
+              <p class="mb-1 small fw-bold" style="color:var(--ct-accent-dark);">Paquete seleccionado:</p>
+              <p class="mb-1" id="res-paquete" style="color:var(--ct-text-main);font-weight:600;"></p>
+              <p class="mb-1 small text-muted" id="res-duracion"></p>
+              <hr style="border-color:var(--ct-card-border);">
+              <div class="d-flex justify-content-between small mb-1"><span>Fecha:</span><span id="res-fecha" class="fw-semibold">—</span></div>
+              <div class="d-flex justify-content-between small mb-1"><span>Personas:</span><span id="res-personas" class="fw-semibold">1</span></div>
+              <div class="d-flex justify-content-between small mb-1"><span>Precio/persona:</span><span id="res-precio-unit" class="fw-semibold"></span></div>
+              <hr style="border-color:var(--ct-card-border);">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="fw-bold" style="color:var(--ct-text-main);">Total:</span>
+                <span id="res-total" class="fw-bold" style="color:var(--ct-accent-dark);font-size:1.1rem;"></span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="small text-muted">Anticipo mínimo (30%):</span>
+                <span id="res-anticipo" class="small fw-bold" style="color:var(--ct-accent);"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="ct-footer py-3 mt-auto">
+    <div class="container text-center"><p class="small mb-0" style="color:#F5DEB3;">&copy; 2026 Capibara Tours</p></div>
+  </footer>
+
+  <script src="../assets/js/jquery-3.6.0.min.js"></script>
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    const usuario = CT.getSesion();
+    if (!usuario) {
+      document.getElementById('alertaLogin').classList.remove('d-none');
+    } else {
+      document.getElementById('navSesion').innerHTML = '<a class="btn btn-sm btn-ct-outline px-3" href="mis-reservas.html"><i class="bi bi-person-check-fill me-1"></i>' + (usuario.persona ? usuario.persona.nombre : usuario.usuario) + '</a>';
+    }
+
+    let paquetes = [];
+
+    async function cargarPaquetes() {
+      try { paquetes = await CT.call('PaqueteController', { action: 'listar' }, 'GET'); } catch (e) { paquetes = []; }
+      const sel = document.getElementById('paquete');
+      if (!paquetes || paquetes.length === 0) {
+        document.getElementById('sinPaquetes').classList.remove('d-none');
+        document.getElementById('formPaquete').classList.add('d-none');
+        document.getElementById('btnConfirmar').disabled = true;
+        return;
+      }
+      paquetes.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id_paquete;
+        opt.dataset.precio = p.precio;
+        opt.dataset.duracion = p.duracion || '';
+        opt.textContent = p.nombre + ' — ' + CT.money(p.precio) + (p.duracion ? ' (' + p.duracion + ')' : '');
+        sel.appendChild(opt);
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const paqParam = params.get('paquete');
+      if (paqParam) {
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === paqParam) { sel.selectedIndex = i; break; }
+        }
+        actualizarResumen();
+      }
+    }
+
+    function actualizarResumen() {
+      const sel = document.getElementById('paquete');
+      const opt = sel.options[sel.selectedIndex];
+      const personas = parseInt(document.getElementById('personas').value) || 1;
+      const fecha = document.getElementById('fechaTour').value;
+
+      if (!opt || !opt.value) {
+        document.getElementById('resumen-vacio').classList.remove('d-none');
+        document.getElementById('resumen-contenido').classList.add('d-none');
+        return;
+      }
+      const precio = parseFloat(opt.dataset.precio);
+      const total = precio * personas;
+      const anticipo = Math.ceil(total * 0.30 * 100) / 100;
+
+      document.getElementById('resumen-vacio').classList.add('d-none');
+      document.getElementById('resumen-contenido').classList.remove('d-none');
+      document.getElementById('res-paquete').textContent = opt.text.split('—')[0].trim();
+      document.getElementById('res-duracion').textContent = opt.dataset.duracion;
+      document.getElementById('res-fecha').textContent = fecha || '—';
+      document.getElementById('res-personas').textContent = personas;
+      document.getElementById('res-precio-unit').textContent = CT.money(precio);
+      document.getElementById('res-total').textContent = CT.money(total);
+      document.getElementById('res-anticipo').textContent = CT.money(anticipo);
+    }
+
+    function selMetodo(el) {
+      document.querySelectorAll('.metodo-pago').forEach(m => m.style.borderColor = '#E8D5B7');
+      el.style.borderColor = 'var(--ct-accent)';
+      document.getElementById('metodoPago').value = el.dataset.metodo;
+    }
+
+    async function confirmarReserva() {
+      if (!usuario) {
+        CT.alertWarn('Inicia sesión', 'Debes iniciar sesión o registrarte para reservar.');
+        return;
+      }
+      const sel = document.getElementById('paquete');
+      const fecha = document.getElementById('fechaTour').value;
+      const personas = document.getElementById('personas').value;
+      if (!sel.value) { CT.alertWarn('Falta el paquete', 'Selecciona un paquete turístico.'); return; }
+      if (!fecha) { CT.alertWarn('Falta la fecha', 'Selecciona la fecha del tour.'); return; }
+      if (!document.getElementById('metodoPago').value) { CT.alertWarn('Método de pago', 'Selecciona un método de pago para el anticipo.'); return; }
+
+      const totalTxt = document.getElementById('res-total').textContent;
+      const anticipoTxt = document.getElementById('res-anticipo').textContent;
+      const anticipoNum = parseFloat(anticipoTxt.replace('S/', '').trim());
+
+      const conf = await Swal.fire({
+        icon: 'question', title: 'Confirmar reserva',
+        html: `<p>Anticipo a pagar: <strong>${anticipoTxt}</strong><br>Total del tour: <strong>${totalTxt}</strong></p><p class="small text-muted">¿Confirmas tu reserva con Capibara Tours?</p>`,
+        showCancelButton: true, confirmButtonText: 'Sí, confirmar', cancelButtonText: 'Cancelar', confirmButtonColor: '#A0522D'
+      });
+      if (!conf.isConfirmed) return;
+
+      try {
+        const hoy = new Date().toISOString().slice(0, 10);
+        const resReserva = await CT.call('ReservaController', {
+          action: 'guardar',
+          id_paquete: sel.value,
+          fecha: hoy,
+          fecha_programada: fecha,
+          cantidad_personas: personas
+        });
+
+        if (!resReserva) { CT.alertErr('No se pudo reservar', 'Intenta nuevamente.'); return; }
+        if (resReserva.success === false) {
+          CT.alertWarn('No se pudo reservar', resReserva.message || 'Debes iniciar sesión.');
+          return;
+        }
+
+        // buscamos el id de la reserva recien creada para registrar el anticipo
+        const misReservas = await CT.call('ReservaController', { action: 'misReservas' }, 'GET');
+        const ultima = Array.isArray(misReservas) ? misReservas[0] : null;
+
+        if (ultima) {
+          await CT.call('PagoController', {
+            action: 'guardar',
+            id_reserva: ultima.id_reserva,
+            monto: anticipoNum,
+            fecha_pago: hoy,
+            metodo_pago: document.getElementById('metodoPago').value
+          });
+        }
+
+        Swal.fire({ icon: 'success', title: '¡Reserva confirmada!', html: '<p>Tu reserva fue registrada' + (ultima ? ' con el número <strong>#' + ultima.id_reserva + '</strong>' : '') + '.</p><p class="small">Recibirás la confirmación de tu guía y transporte próximamente.</p>', confirmButtonColor: '#A0522D' })
+          .then(() => { window.location.href = 'mis-reservas.html'; });
+      } catch (e) {
+        CT.alertErr('Error de conexión', 'No se pudo registrar la reserva. Intenta nuevamente.');
+      }
+    }
+
+    cargarPaquetes();
+  </script>
+</body>
+</html>

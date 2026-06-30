@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capibara Tours — Registro de Cliente</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body style="background:#FFFDF8;">
+
+  <nav class="navbar navbar-ct sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="../assets/png/logo.png" alt="Capibara Tours">
+        <span class="brand-name">Capibara Tours</span>
+      </a>
+      <a href="login.html" class="btn btn-ct-outline btn-sm"><i class="bi bi-box-arrow-in-right me-1"></i>Ya tengo cuenta</a>
+    </div>
+  </nav>
+
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card card-ct">
+          <div class="card-header text-center py-3">
+            <i class="bi bi-person-plus-fill fs-4 me-2"></i>Nuevo Registro de Cliente
+          </div>
+          <div class="card-body p-4">
+            <p class="small text-muted mb-4">Crea tu cuenta para reservar tours, ver tu historial y acceder a beneficios para clientes frecuentes. Tu cuenta se crea automáticamente con rol <strong>Cliente</strong>.</p>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Nombres <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nombres" placeholder="Ej: Ana María">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Apellidos <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="apellidos" placeholder="Ej: Quispe Torres">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Tipo doc. <span class="text-danger">*</span></label>
+                <select class="form-select" id="tipoDoc">
+                  <option value="D">DNI</option>
+                  <option value="C">Carné Ext.</option>
+                  <option value="P">Pasaporte</option>
+                  <option value="R">RUC</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-8">
+                <label class="form-label">N° de documento <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="numDoc" maxlength="9" placeholder="8 a 9 dígitos">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Teléfono / Celular <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="telefono" maxlength="15" placeholder="+51 900 000 000">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" id="correo" placeholder="tucorreo@email.com">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Contraseña <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" id="password" placeholder="Mín. 8 caracteres">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Confirmar contraseña <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" id="confirmar" placeholder="Repite la contraseña">
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="terminos">
+                  <label class="form-check-label small" for="terminos">
+                    Acepto los <a href="#" style="color:var(--ct-accent);">términos y condiciones</a> y las políticas de privacidad de Capibara Tours.
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-ct-primary w-100 py-2 mt-4" id="btnRegistrar">
+              <i class="bi bi-person-check-fill me-2"></i>Crear mi cuenta
+            </button>
+            <p class="text-center small mt-3 mb-0">¿Ya tienes cuenta? <a href="login.html" style="color:var(--ct-accent);font-weight:600;">Inicia sesión</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="ct-footer py-3 mt-auto">
+    <div class="container text-center">
+      <p class="small mb-0" style="color:#F5DEB3;">&copy; 2026 Capibara Tours</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/jquery-3.6.0.min.js"></script>
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../assets/js/app.js"></script>
+  <script>
+    document.getElementById('btnRegistrar').addEventListener('click', registrar);
+
+    async function registrar() {
+      const campos = ['nombres','apellidos','numDoc','telefono','correo','password','confirmar'];
+      for (const c of campos) {
+        if (!document.getElementById(c).value.trim()) {
+          CT.alertWarn('Campo requerido', 'Por favor completa todos los campos obligatorios.');
+          return;
+        }
+      }
+      if (document.getElementById('password').value !== document.getElementById('confirmar').value) {
+        CT.alertErr('Contraseñas no coinciden', 'Verifica que las contraseñas sean iguales.');
+        return;
+      }
+      if (document.getElementById('password').value.length < 8) {
+        CT.alertWarn('Contraseña muy corta', 'Usa al menos 8 caracteres.');
+        return;
+      }
+      if (!document.getElementById('terminos').checked) {
+        CT.alertWarn('Acepta los términos', 'Debes aceptar los términos y condiciones para continuar.');
+        return;
+      }
+
+      try {
+        const res = await CT.call('AuthController', {
+          action: 'register',
+          nombres: document.getElementById('nombres').value.trim(),
+          apellidos: document.getElementById('apellidos').value.trim(),
+          documento: document.getElementById('tipoDoc').value,
+          numero_doc: document.getElementById('numDoc').value.trim(),
+          telefono: document.getElementById('telefono').value.trim(),
+          email: document.getElementById('correo').value.trim(),
+          password: document.getElementById('password').value
+        });
+
+        if (res.success) {
+          Swal.fire({ icon:'success', title:'¡Registro exitoso!', text:'Tu cuenta fue creada con rol Cliente. Bienvenido a Capibara Tours.', confirmButtonColor:'#A0522D', timer:2000, showConfirmButton:false })
+            .then(() => { window.location.href = 'login.html'; });
+        } else {
+          CT.alertErr('No se pudo registrar', res.message || 'Verifica que el correo no esté ya registrado.');
+        }
+      } catch (e) {
+        CT.alertErr('Error de conexión', 'No se pudo contactar al servidor. Intenta nuevamente.');
+      }
+    }
+  </script>
+</body>
+</html>
