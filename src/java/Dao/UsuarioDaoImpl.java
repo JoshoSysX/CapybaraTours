@@ -14,46 +14,48 @@ public class UsuarioDaoImpl implements IUsuario {
     @Override
     public Usuario validate(String usuario, String password) {
         Usuario u = null;
-        Persona p;
-        PreparedStatement st;
-        ResultSet rs;
-        String query;
-
+        PreparedStatement st = null;
+        ResultSet rs = null;
         try {
             String hashedPassword = new Usuario().HashPassword(password);
 
-            query = " SELECT u.id_usuario, u.usuario, u.rol, p.id_persona, p.nombres "
-                    + " FROM persona p, usuario u "
-                    + " WHERE u.id_persona = p.id_persona "
-                    + " AND u.usuario = ? "
-                    + " AND u.contraseña = ? ";
+            String query = "SELECT u.ID_USUARIO, u.USUARIO, u.ROL, "
+                    + "p.ID_PERSONA, p.NOMBRES, p.APELLIDOS, p.DOCUMENTO, "
+                    + "p.NUMERO_DOC, p.TELEFONO, p.CORREO "
+                    + "FROM PERSONA p INNER JOIN USUARIO u ON u.ID_PERSONA = p.ID_PERSONA "
+                    + "WHERE u.USUARIO = ? AND u.\"CONTRASEÑA\" = ?";
 
             cn = ConexionOracleSingleton.getConnection();
             st = cn.prepareStatement(query);
             st.setString(1, usuario);
             st.setString(2, hashedPassword);
             rs = st.executeQuery();
-            while (rs.next()) {
+
+            if (rs.next()) {
                 u = new Usuario();
-                p = new Persona();
-                u.setId_usuario(rs.getInt("id_usuario"));
-                u.setUsuario(rs.getString("usuario"));
-                u.setRol(Rol.valueOf(rs.getString("rol").toUpperCase()));
-                p.setId_persona(rs.getInt("id_persona"));
-                p.setNombre(rs.getString("nombres"));
+                Persona p = new Persona();
+
+                u.setId_usuario(rs.getInt("ID_USUARIO"));
+                u.setUsuario(rs.getString("USUARIO"));
+                u.setRol(Rol.valueOf(rs.getString("ROL").toUpperCase()));
+
+                p.setId_persona(rs.getInt("ID_PERSONA"));
+                p.setNombre(rs.getString("NOMBRES"));
+                p.setApellido(rs.getString("APELLIDOS"));
+                p.setDocumento(rs.getString("DOCUMENTO"));
+                p.setNumeroDoc(rs.getString("NUMERO_DOC"));
+                p.setTelefono(rs.getString("TELEFONO"));
+                p.setEmail(rs.getString("CORREO"));
+
                 u.setPersona(p);
             }
-
         } catch (Exception e) {
             System.out.println("Error al validar usuario: " + e.getMessage());
+            e.printStackTrace();
         } finally {
-            if (cn != null) {
-                try {
-                } catch (Exception ex) {
-                }
-            }
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (st != null) st.close(); } catch (Exception e) {}
         }
         return u;
     }
-
 }

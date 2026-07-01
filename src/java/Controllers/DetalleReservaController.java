@@ -81,8 +81,8 @@ public class DetalleReservaController extends HttpServlet {
             t.setIdTransporte(Integer.parseInt(request.getParameter("id_transporte")));
             dr.setTransporte(t);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            dr.setFecha_salida(sdf.parse(request.getParameter("fecha_salida")));
+            // Fecha asignada automatica: momento actual de la asignacion.
+            dr.setFecha_salida(new java.util.Date());
 
             int resultado = dDao.insert(dr);
             response.getWriter().print(gson.toJson(resultado > 0));
@@ -109,8 +109,8 @@ public class DetalleReservaController extends HttpServlet {
             t.setIdTransporte(Integer.parseInt(request.getParameter("id_transporte")));
             dr.setTransporte(t);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            dr.setFecha_salida(sdf.parse(request.getParameter("fecha_salida")));
+            // Fecha asignada automatica: momento actual de la asignacion.
+            dr.setFecha_salida(new java.util.Date());
 
             boolean resultado = dDao.update(dr);
             response.getWriter().print(gson.toJson(resultado));

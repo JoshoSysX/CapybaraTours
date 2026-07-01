@@ -128,11 +128,27 @@ public class PaqueteController extends HttpServlet {
             Part part = request.getPart("imagen");
             if (part != null && part.getSize() > 0) {
                 String fileName = part.getSubmittedFileName();
-                String uploadPath = getServletContext().getRealPath("")
-                        + File.separator + UPLOAD_DIR;
-                new File(uploadPath).mkdirs();
-                part.write(uploadPath + File.separator + fileName);
-                p.setImagen(UPLOAD_DIR + "/" + fileName);
+                String pathBuild = getServletContext().getRealPath("/")
+                        + "assets/img/paquetes" + File.separator;
+
+                String pathSource = pathBuild.replace("build" + File.separator + "web", "web");
+
+                new File(pathSource).mkdirs();
+                new File(pathBuild).mkdirs();
+
+                File fileSource = new File(pathSource + fileName);
+
+                try (InputStream input = part.getInputStream()) {
+                    java.nio.file.Files.copy(
+                            input,
+                            fileSource.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                    );
+                }
+
+                part.write(pathBuild + fileName);
+
+                p.setImagen("assets/img/paquetes/" + fileName);
             } else {
                 p.setImagen(request.getParameter("imagen_actual"));
             }

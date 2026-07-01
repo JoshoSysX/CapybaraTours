@@ -55,51 +55,7 @@
 <script src="../assets/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/app.js"></script>
-<script>
-  CT.requireRole('ADMIN');
-  document.getElementById('btnSalir').addEventListener('click', async (e) => { e.preventDefault(); await CT.logout(); window.location.href = 'login.html'; });
+<script src="../assets/js/admin-dashboard.js"></script>
 
-  function tarjeta(valor, color, label, icono) {
-    return `<div class="col-6 col-md-3"><div class="card card-ct text-center py-3">
-      <i class="bi ${icono} fs-3 mb-1" style="color:${color};"></i>
-      <div style="font-size:1.8rem;font-weight:800;color:${color};">${valor}</div>
-      <div class="small text-muted">${label}</div></div></div>`;
-  }
-
-  async function cargarDashboard() {
-    let paquetes = [], reservas = [], guias = [], transportes = [];
-    try { paquetes = await CT.call('PaqueteController', { action: 'listar' }, 'GET'); } catch (e) {}
-    try { reservas = await CT.call('ReservaController', { action: 'listar' }, 'GET'); } catch (e) {}
-    try { guias = await CT.call('GuiaController', { action: 'listar' }, 'GET'); } catch (e) {}
-    try { transportes = await CT.call('TransporteController', { action: 'listar' }, 'GET'); } catch (e) {}
-
-    document.getElementById('tarjetas').innerHTML =
-      tarjeta(paquetes.length || 0, 'var(--ct-accent-dark)', 'Paquetes activos', 'bi-map-fill') +
-      tarjeta(reservas.length || 0, 'var(--ct-accent)', 'Reservas totales', 'bi-calendar-check-fill') +
-      tarjeta(guias.length || 0, '#28a745', 'Guías registrados', 'bi-person-badge-fill') +
-      tarjeta(transportes.length || 0, '#17a2b8', 'Transportes', 'bi-truck');
-
-    if (!paquetes.length) {
-      document.getElementById('ranking').innerHTML = '<tr><td colspan="4" class="text-muted small">Aún no hay paquetes registrados.</td></tr>';
-      return;
-    }
-    const conteo = {};
-    reservas.forEach(r => {
-      if (!r.paquete) return;
-      const id = r.paquete.id_paquete;
-      conteo[id] = (conteo[id] || 0) + (r.cantidad || 0);
-    });
-    const ranking = paquetes
-      .map(p => ({ p, total: conteo[p.id_paquete] || 0 }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
-
-    document.getElementById('ranking').innerHTML = ranking.map((item, i) => `
-      <tr><td>${i + 1}</td><td>${item.p.nombre}</td><td>${item.total}</td><td>${CT.money(item.p.precio)}</td></tr>
-    `).join('');
-  }
-
-  cargarDashboard();
-</script>
 </body>
 </html>

@@ -144,6 +144,39 @@ public class PersonaDaoImpl implements IPersona {
         return resultado;
     }
 
+
+    @Override
+    public int insertSoloPersona(Persona p) {
+        CallableStatement cs = null;
+        int idPersona = 0;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String queryPersona = "BEGIN "
+                    + "INSERT INTO PERSONA "
+                    + "(NOMBRES, APELLIDOS, DOCUMENTO, NUMERO_DOC, TELEFONO, CORREO) "
+                    + "VALUES (?,?,?,?,?,?) "
+                    + "RETURNING ID_PERSONA INTO ?; "
+                    + "END;";
+            cs = cn.prepareCall(queryPersona);
+            cs.setString(1, p.getNombre());
+            cs.setString(2, p.getApellido());
+            cs.setString(3, p.getDocumento());
+            cs.setString(4, p.getNumeroDoc());
+            cs.setString(5, p.getTelefono());
+            cs.setString(6, p.getEmail());
+            cs.registerOutParameter(7, Types.INTEGER);
+            cs.execute();
+            idPersona = cs.getInt(7);
+            p.setId_persona(idPersona);
+        } catch (Exception e) {
+            System.out.println("Error al insertar solo persona: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try { if (cs != null) cs.close(); } catch (Exception e) { e.printStackTrace(); }
+        }
+        return idPersona;
+    }
+
     @Override
     public boolean update(Persona p) {
         PreparedStatement st = null;
@@ -235,6 +268,48 @@ public class PersonaDaoImpl implements IPersona {
         }
 
         return resultado;
+    }
+
+    @Override
+    public boolean existeCorreo(String correo) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "SELECT COUNT(*) FROM PERSONA WHERE LOWER(CORREO) = LOWER(?)";
+            st = cn.prepareStatement(query);
+            st.setString(1, correo);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al validar correo: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, st);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existeDocumento(String numeroDoc) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "SELECT COUNT(*) FROM PERSONA WHERE NUMERO_DOC = ?";
+            st = cn.prepareStatement(query);
+            st.setString(1, numeroDoc);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al validar documento: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, st);
+        }
+        return false;
     }
 
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {

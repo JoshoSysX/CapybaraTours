@@ -189,6 +189,23 @@ public class PagoDaoImpl implements IPago {
         return lista;
     }
 
+    public boolean actualizarMontoPorReserva(int idReserva, double monto) {
+        PreparedStatement st = null;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "UPDATE PAGO SET MONTO=? WHERE ID_RESERVA=?";
+            st = cn.prepareStatement(query);
+            st.setDouble(1, monto);
+            st.setInt(2, idReserva);
+            return st.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error al actualizar monto por reserva: " + e.getMessage());
+        } finally {
+            cerrarRecursos(null, st);
+        }
+        return false;
+    }
+
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {
         try {
             if (rs != null) {

@@ -54,7 +54,7 @@
         <div class="table-responsive d-none" id="contTabla">
           <table class="table table-hover align-middle">
             <thead>
-              <tr><th>#Reserva</th><th>Paquete</th><th>Fecha del Tour</th><th>Personas</th><th>Estado</th></tr>
+              <tr><th>#Reserva</th><th>Paquete</th><th>Fecha del Tour</th><th>Personas</th><th>Estado</th><th>Acciones</th></tr>
             </thead>
             <tbody id="tbodyReservas"></tbody>
           </table>
@@ -71,69 +71,7 @@
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/js/app.js"></script>
-  <script>
-    const usuario = CT.requireRole('CLIENTE');
+  <script src="../assets/js/cliente-mis-reservas.js"></script>
 
-    document.getElementById('btnSalir').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await CT.logout();
-      window.location.href = 'login.html';
-    });
-
-    const ESTADOS = {
-      PENDIENTE:  { txt: 'Pendiente',  clase: 'badge-pendiente' },
-      CONFIRMADO: { txt: 'Anticipo pagado', clase: 'badge-guia text-white' },
-      PAGADA:     { txt: 'Pagado completo', clase: 'badge-confirmada text-white' },
-      EN_CURSO:   { txt: 'En curso',   clase: 'badge-ejecutado text-white' },
-      FINALIZADA: { txt: 'Finalizada', clase: 'badge-ejecutado text-white' },
-      CANCELADA:  { txt: 'Cancelada',  clase: 'bg-danger text-white' }
-    };
-
-    function tarjeta(valor, color, label) {
-      return `<div class="col-6 col-md-3"><div class="card card-ct text-center py-3">
-        <div style="font-size:1.8rem;font-weight:800;color:${color};">${valor}</div>
-        <div class="small text-muted">${label}</div></div></div>`;
-    }
-
-    async function cargar() {
-      let reservas = [];
-      try { reservas = await CT.call('ReservaController', { action: 'misReservas' }, 'GET'); } catch (e) { reservas = []; }
-      document.getElementById('cargando').classList.add('d-none');
-
-      if (!Array.isArray(reservas) || reservas.length === 0) {
-        document.getElementById('sinReservas').classList.remove('d-none');
-        document.getElementById('tarjetasEstado').innerHTML = tarjeta(0, 'var(--ct-accent-dark)', 'Total reservas');
-        return;
-      }
-
-      const total = reservas.length;
-      const pagadas = reservas.filter(r => r.estadoReserva === 'PAGADA').length;
-      const finalizadas = reservas.filter(r => r.estadoReserva === 'FINALIZADA').length;
-      const pendientes = reservas.filter(r => r.estadoReserva === 'PENDIENTE' || r.estadoReserva === 'CONFIRMADO').length;
-
-      document.getElementById('tarjetasEstado').innerHTML =
-        tarjeta(total, 'var(--ct-accent-dark)', 'Total reservas') +
-        tarjeta(pagadas, '#28a745', 'Pagadas') +
-        tarjeta(finalizadas, '#17a2b8', 'Finalizadas') +
-        tarjeta(pendientes, '#ffc107', 'Pendientes / saldo');
-
-      document.getElementById('contTabla').classList.remove('d-none');
-      const tbody = document.getElementById('tbodyReservas');
-      tbody.innerHTML = '';
-      reservas.forEach(r => {
-        const est = ESTADOS[r.estadoReserva] || { txt: r.estadoReserva, clase: 'bg-secondary text-white' };
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><span class="fw-bold" style="color:var(--ct-accent);">#${r.id_reserva}</span></td>
-          <td>${r.paquete ? r.paquete.nombre : '—'}</td>
-          <td>${CT.fechaCorta(r.fecha_programada)}</td>
-          <td>${r.cantidad}</td>
-          <td><span class="badge ${est.clase}">${est.txt}</span></td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    cargar();
-  </script>
 </body>
 </html>

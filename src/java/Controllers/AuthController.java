@@ -61,7 +61,12 @@ public class AuthController extends HttpServlet {
 
         try (PrintWriter out = response.getWriter()) {
 
-            if (action.equals("validar")) {
+            if (action == null) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Accion no enviada");
+                out.print(jsonResponse.toString());
+
+            } else if (action.equals("validar")) {
                 String user = request.getParameter("usuario");
                 String pass = request.getParameter("password");
 
@@ -100,6 +105,22 @@ public class AuthController extends HttpServlet {
                 p.setEmail(request.getParameter("email"));
 
                 u.setContraseña(request.getParameter("password"));
+
+                // Validacion basica para no repetir correo ni DNI/documento.
+                // Se hace antes de insertar para mostrar un mensaje claro al usuario.
+                if (pDao.existeCorreo(p.getEmail())) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "El correo ya esta registrado");
+                    out.print(jsonResponse.toString());
+                    return;
+                }
+
+                if (pDao.existeDocumento(p.getNumeroDoc())) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "El numero de documento ya esta registrado");
+                    out.print(jsonResponse.toString());
+                    return;
+                }
 
                 int resultado = pDao.insert(p, u);
 

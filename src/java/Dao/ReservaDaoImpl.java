@@ -128,6 +128,26 @@ public class ReservaDaoImpl implements IReserva {
         return resultado;
     }
 
+
+    public boolean updateEstado(int idReserva, EstadoReserva estado) {
+        PreparedStatement st = null;
+        boolean resultado = false;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "UPDATE RESERVA SET ESTADO=? WHERE ID_RESERVA=?";
+            st = cn.prepareStatement(query);
+            st.setString(1, estadoToCode(estado));
+            st.setInt(2, idReserva);
+            resultado = st.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error al actualizar estado de reserva: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            cerrarRecursos(null, st);
+        }
+        return resultado;
+    }
+
     @Override
     public Reserva SearchById(int id) {
         Reserva r = null;
