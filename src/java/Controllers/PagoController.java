@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -49,6 +51,9 @@ public class PagoController extends HttpServlet {
                 break;
             case "porReserva":
                 pagosPorReserva(request, response);
+                break;
+            case "reporteVentas":
+                reporteVentas(request, response);
                 break;
             default:
                 listarPagos(request, response);
@@ -124,6 +129,50 @@ public class PagoController extends HttpServlet {
         int idReserva = Integer.parseInt(request.getParameter("id_reserva"));
         List<Pago> pagos = pDao.listaPorReserva(idReserva);
         response.getWriter().print(gson.toJson(pagos));
+    }
+
+
+    private void reporteVentas(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Map<String, Object> data = new HashMap<>();
+        try {
+            String tipo = request.getParameter("tipo");
+            if (tipo == null || tipo.trim().isEmpty()) {
+                tipo = "total";
+            }
+            tipo = tipo.toLowerCase();
+
+            double total;
+            String descripcion;
+
+            if (tipo.equals("mes")) {
+                int anio = Integer.parseInt(request.getParameter("anio"));
+                int mes = Integer.parseInt(request.getParameter("mes"));
+                total = pDao.totalPagosPorMes(anio, mes);
+                descripcion = "Pagos del mes " + mes + " del año " + anio;
+                data.put("anio", anio);
+                data.put("mes", mes);
+            } else if (tipo.equals("anio")) {
+                int anio = Integer.parseInt(request.getParameter("anio"));
+                total = pDao.totalPagosPorAnio(anio);
+                descripcion = "Pagos del año " + anio;
+                data.put("anio", anio);
+            } else {
+                tipo = "total";
+                total = pDao.totalPagosGeneral();
+                descripcion = "Total general de pagos";
+            }
+
+            data.put("success", true);
+            data.put("tipo", tipo);
+            data.put("descripcion", descripcion);
+            data.put("total", total);
+        } catch (Exception e) {
+            data.put("success", false);
+            data.put("message", "No se pudo calcular el reporte de pagos: " + e.getMessage());
+            data.put("total", 0);
+        }
+        response.getWriter().print(gson.toJson(data));
     }
 
     @Override

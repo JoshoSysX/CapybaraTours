@@ -19,6 +19,62 @@
   </aside>
   <div class="admin-content">
     <h4 class="mb-4 fw-bold" style="color:var(--ct-accent-dark);"><i class="bi bi-bar-chart-fill me-2"></i>Consultas y Reportes</h4>
+
+    <div class="card card-ct mb-4">
+      <div class="card-header"><i class="bi bi-cash-stack me-2"></i>Consulta de pagos</div>
+      <div class="card-body">
+        <form id="formConsultaPagos" class="row g-3 align-items-end mb-3">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Ver pagos</label>
+            <select id="tipoConsultaPago" class="form-select">
+              <option value="total">Total general</option>
+              <option value="anio">Por año</option>
+              <option value="mes">Por mes</option>
+            </select>
+          </div>
+          <div class="col-md-3" id="grupoAnioPago">
+            <label class="form-label small fw-bold">Año</label>
+            <input type="number" id="anioPago" class="form-control" min="2000" max="2100">
+          </div>
+          <div class="col-md-3 d-none" id="grupoMesPago">
+            <label class="form-label small fw-bold">Mes</label>
+            <select id="mesPago" class="form-select">
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8">Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-ct-primary w-100"><i class="bi bi-search me-1"></i>Consultar</button>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Tipo de consulta</th>
+                <th>Periodo</th>
+                <th class="text-end">Total pagado</th>
+              </tr>
+            </thead>
+            <tbody id="tablaConsultaPagos">
+              <tr><td colspan="3" class="text-muted">Cargando consulta...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="row g-3 mb-4" id="kpis"></div>
     <div class="row g-4">
       <div class="col-lg-7">

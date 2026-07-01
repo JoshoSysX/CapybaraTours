@@ -11,5 +11,8 @@ public interface IPago {
     public Pago SearchById(int id);
     public boolean delete(int id);
     public List<Pago> listaPorReserva(int idReserva);
+    public double totalPagosGeneral();
+    public double totalPagosPorAnio(int anio);
+    public double totalPagosPorMes(int anio, int mes);
     
 }

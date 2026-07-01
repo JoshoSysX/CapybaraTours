@@ -206,6 +206,76 @@ public class PagoDaoImpl implements IPago {
         return false;
     }
 
+
+    @Override
+    public double totalPagosGeneral() {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        double total = 0;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "SELECT NVL(SUM(MONTO), 0) AS TOTAL FROM PAGO";
+            st = cn.prepareStatement(query);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble("TOTAL");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al calcular total general de pagos: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, st);
+        }
+        return total;
+    }
+
+    @Override
+    public double totalPagosPorAnio(int anio) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        double total = 0;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "SELECT NVL(SUM(MONTO), 0) AS TOTAL FROM PAGO "
+                    + "WHERE EXTRACT(YEAR FROM FECHA_PAGO) = ?";
+            st = cn.prepareStatement(query);
+            st.setInt(1, anio);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble("TOTAL");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al calcular total de pagos por año: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, st);
+        }
+        return total;
+    }
+
+    @Override
+    public double totalPagosPorMes(int anio, int mes) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        double total = 0;
+        try {
+            cn = ConexionOracleSingleton.getConnection();
+            String query = "SELECT NVL(SUM(MONTO), 0) AS TOTAL FROM PAGO "
+                    + "WHERE EXTRACT(YEAR FROM FECHA_PAGO) = ? "
+                    + "AND EXTRACT(MONTH FROM FECHA_PAGO) = ?";
+            st = cn.prepareStatement(query);
+            st.setInt(1, anio);
+            st.setInt(2, mes);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble("TOTAL");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al calcular total de pagos por mes: " + e.getMessage());
+        } finally {
+            cerrarRecursos(rs, st);
+        }
+        return total;
+    }
+
     private void cerrarRecursos(ResultSet rs, PreparedStatement st) {
         try {
             if (rs != null) {
